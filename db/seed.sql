@@ -1,0 +1,37 @@
+USE employee_db;
+
+INSERT INTO department (name)
+VALUES ('Administration'),
+    ('Teaching'),
+    ('Counseling'),
+    ('Maintenance');
+
+INSERT INTO role (title, salary, department_id)
+VALUES ('Headmaster', 150000, 1),
+    ('House Head', 125000, 1),
+    ('Dark Arts Teacher', 115000, 2),
+    ('Muggle Studies', 10000, 3),
+    ('Carataker', 85000, 4),
+    ('Librarian', 85000, 4),
+    ('History Teacher', 110000, 2),
+    ('Potions', 95000, 3),
+    ('Flying Teacher', 80000, 2),
+    ('Matron', 110000, 1),
+    ('Herbology Teacher', 102000, 2);
+
+INSERT INTO employee (first_name, last_name, role_id)
+VALUES ("Albus", "Dumbledore", 1),
+     ("Alastor", "Moody", 3),
+     ("Algus", "Filch", 5),
+     ("Cuthbert", "Binns", 4),
+     ("Dolores", "Umbridge", 3),
+     ("Gilderoy", "Lockhart", 3),
+     ("Horace", "Slughorn", 8),
+     ("Irma", "Prince", 6),
+     ("Minerva", "McGonagall", 2),
+     ("Pomona", "Sprout", 11),
+     ("Poppy", "Pomfrey", 10),
+     ("Remus", "Lupin", 3),
+     ("Rolanda", "Hooch", 9),
+     ("Rebeus", "Hagrid", 5),
+     ("Severus", "Snape", 2);
