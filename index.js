@@ -56,3 +56,63 @@ const mainMenu = () => {
         }
     });
 };
+
+const viewDepts = () =>
+    db.query(`
+    
+    `, (err, results => {
+        if (err) {
+            console.log(err);
+        } else {
+            console.table(results)
+        }
+        mainMenu();
+    }
+));
+const viewRoles = () =>
+    db.query(`
+    
+    `, (err, results => {
+        if (err) {
+            console.log(err);
+        } else {
+            console.table(results)
+        }
+        mainMenu();
+    }
+));
+const viewEmployees = () =>
+    db.query(`
+    
+    `, (err, results => {
+        if (err) {
+            console.log(err);
+        } else {
+            console.table(results)
+        }
+        mainMenu();
+    }
+));
+
+addDepartment = () => {
+    inquirer.prompt([
+        {
+            type: 'input',
+            message: 'What department would you like to add',
+            name: 'newDept',
+        },
+    ])
+    .then((res) => {
+        db.query("INSERT INTO department (department_name) VALUES (?)",
+        res.newDept,
+        (err, results => {
+            if (err) {
+                console.log(err);
+            } else {
+                console.log(`Department ${res.newDept} has been successfully added!`);
+            }
+            mainMenu();
+        })
+        )
+    })
+}
