@@ -1,5 +1,5 @@
 const inquirer = require('inquirer');
-const table = require('console.table');
+const cTable = require('console.table');
 const mysql = require('mysql2');
 
 const db = mysql.createConnection({
@@ -27,6 +27,7 @@ const mainMenu = () => {
             "Add a role",
             "Add an employee",
             "Update an employee",
+            "Exit",
         ],
     })
     .then(function (data) {
@@ -52,48 +53,57 @@ const mainMenu = () => {
             case "Update an employee":
                 updateEmployee();
                 break;
-            default: console.log("Please Try Again");
+            case "Exit":
+                shutDown();
+                break;
         }
     });
 };
 
 const viewDepts = () =>
     db.query(`
-    
-    `, (err, results => {
+    SELECT department.id AS ID, department.name AS Department FROM department;
+    `, (err, results) => {
         if (err) {
-            console.log(err);
+            console.log(err)
         } else {
             console.table(results)
         }
         mainMenu();
     }
-));
+);
+
 const viewRoles = () =>
     db.query(`
-    
-    `, (err, results => {
+    SELECT role.id, role.title, department.name AS Department
+    FROM role
+    LEFT JOIN department ON role.department_id = department.id
+    ORDER BY role.id;
+    `, (err, results) => {
         if (err) {
-            console.log(err);
+            console.log(err)
         } else {
             console.table(results)
         }
         mainMenu();
     }
-));
+);
 
 const viewEmployees = () =>
     db.query(`
-    
-    `, (err, results => {
+    SELECT employee.id, employee.first_name, employee.last_name, role.title, department.name AS Department, role.salary
+    FROM employee
+    LEFT JOIN role ON employee.role_id = role.id
+    LEFT JOIN department ON role.department_id = department.id;
+    `, (err, results) => {
         if (err) {
-            console.log(err);
+            console.log(err)
         } else {
             console.table(results)
         }
         mainMenu();
     }
-));
+);
 
 addDepartment = () => {
     inquirer.prompt([

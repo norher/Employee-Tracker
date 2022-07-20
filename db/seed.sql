@@ -1,12 +1,12 @@
 USE employee_db;
 
-INSERT INTO department (name)
+INSERT IGNORE INTO department (name)
 VALUES ('Administration'),
     ('Teaching'),
     ('Counseling'),
     ('Maintenance');
 
-INSERT INTO role (title, salary, department_id)
+INSERT IGNORE INTO role (title, salary, department_id)
 VALUES ('Headmaster', 150000, 1), 
     ('House Head', 125000, 1),
     ('Dark Arts Instructor', 115000, 2),
@@ -17,7 +17,7 @@ VALUES ('Headmaster', 150000, 1),
     ('Potions Instructor', 95000, 3),
     ('Matron', 110000, 1);
 
-INSERT INTO employee (first_name, last_name, role_id)
+INSERT IGNORE INTO employee (first_name, last_name, role_id)
 VALUES ("Albus", "Dumbledore", 1),
      ("Alastor", "Moody", 3),
      ("Algus", "Filch", 5),
