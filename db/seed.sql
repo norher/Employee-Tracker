@@ -15,7 +15,7 @@ VALUES ('Headmaster', 150000, 1),
     ('Librarian', 85000, 4),
     ('Teacher', 110000, 2),
     ('Potions Instructor', 95000, 3),
-    ('Matron', 110000, 1),
+    ('Matron', 110000, 1);
 
 INSERT INTO employee (first_name, last_name, role_id)
 VALUES ("Albus", "Dumbledore", 1),

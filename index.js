@@ -81,6 +81,7 @@ const viewRoles = () =>
         mainMenu();
     }
 ));
+
 const viewEmployees = () =>
     db.query(`
     
@@ -115,4 +116,54 @@ addDepartment = () => {
         })
         )
     })
+};
+
+addRole = () => {
+    inquirer.prompt([
+        {
+            type: 'input',
+            message: 'What Role would you like to add',
+            name: 'newRole',
+        },
+    ])
+    .then((res) => {
+        db.query("INSERT INTO role (role_name) VALUES (?)",
+        res.newRole,
+        (err, results => {
+            if (err) {
+                console.log(err);
+            } else {
+                console.log(`Role ${res.newRole} has been successfully added!`);
+            }
+            mainMenu();
+        })
+        )
+    })
+};
+
+addEmployee = () => {
+    inquirer.prompt([
+        {
+            type: 'input',
+            message: 'What Employee would you like to add',
+            name: 'newEmployee',
+        },
+    ])
+    .then((res) => {
+        db.query("INSERT INTO Employee (Employee_name) VALUES (?)",
+        res.newEmployee,
+        (err, results => {
+            if (err) {
+                console.log(err);
+            } else {
+                console.log(`Employee ${res.newEmployee} has been successfully added!`);
+            }
+            mainMenu();
+        })
+        )
+    })
+};
+
+function init() {
+    mainMenu();
 }
