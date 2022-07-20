@@ -2,12 +2,27 @@ const inquirer = require('inquirer');
 const cTable = require('console.table');
 const mysql = require('mysql2');
 
+const allEmployees = [];
+const allDepartments = [];
+const allRoles = [];
+
 const db = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: "..",
     database: 'employee_db'
 }, console.log(`Connected to database.`));
+
+const getDepartments = () => {
+    db.query(`SELECT * FROM department`, (err, results) => {
+        if (err) {
+            console.log(err);
+        }
+        for (let department of results) {
+            allDepartments.push(department.name)
+        }
+    })
+};
 
 db.connect(function (err) {
     if (err) throw err;
@@ -114,17 +129,15 @@ addDepartment = () => {
         },
     ])
     .then((res) => {
-        db.query("INSERT INTO department (department_name) VALUES (?)",
-        res.newDept,
-        (err, results => {
-            if (err) {
-                console.log(err);
-            } else {
-                console.log(`Department ${res.newDept} has been successfully added!`);
-            }
+        var query = `INSERT INTO department set ?`;
+        db.query(query, {
+            name: res.newDept,
+        }, function (err, res) {
+            if (err) throw err;
+            console.log("Department Added!");
+            console.table(res);
             mainMenu();
         })
-        )
     })
 };
 
@@ -132,22 +145,39 @@ addRole = () => {
     inquirer.prompt([
         {
             type: 'input',
-            message: 'What Role would you like to add',
+            message: 'What Role would you like to add?',
             name: 'newRole',
+        },
+        {
+            type: 'input',
+            message: 'What is the salary of this role?',
+            name: 'newSalary',
+        },
+        {
+            type: 'list',
+            message: 'To which department does this role belong?',
+            name: 'dept',
+            choices: allDepartments,
         },
     ])
     .then((res) => {
-        db.query("INSERT INTO role (role_name) VALUES (?)",
-        res.newRole,
-        (err, results => {
+        let deptID;
+        db.query(`SELECT (id) FROM department WHERE department.name=(?)`, res.dept, (err, results) => {
             if (err) {
                 console.log(err);
             } else {
-                console.log(`Role ${res.newRole} has been successfully added!`);
+                deptID = results[0].id;
             }
-            mainMenu();
+            db.query(`INSERT INTO role (title, department_id, salary) VALUES (?, ?, ?)`, [res.newRole, res.newSalary, deptID], (err, results) => {
+                if (err) {
+                    console.log(err);
+                } else {
+                    console.log("Role Successfully Added");
+                }
+            }
+            )
         })
-        )
+        mainMenu();
     })
 };
 
@@ -175,5 +205,6 @@ addEmployee = () => {
 };
 
 function init() {
+    getDepartments();
     mainMenu();
 }
