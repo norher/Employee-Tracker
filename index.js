@@ -154,30 +154,21 @@ addRole = () => {
             name: 'newSalary',
         },
         {
-            type: 'list',
-            message: 'To which department does this role belong?',
+            type: 'input',
+            message: 'Given the department IDs 1=Admin, 2=Teaching, 3=Counseling, 4=Maintenance, 5=Flying, to which department id, does this role belong to',
             name: 'dept',
-            choices: allDepartments,
         },
     ])
     .then((res) => {
-        let deptID;
-        db.query(`SELECT (id) FROM department WHERE department.name=(?)`, res.dept, (err, results) => {
-            if (err) {
-                console.log(err);
-            } else {
-                deptID = results[0].id;
-            }
-            db.query(`INSERT INTO role (title, department_id, salary) VALUES (?, ?, ?)`, [res.newRole, res.newSalary, deptID], (err, results) => {
-                if (err) {
-                    console.log(err);
-                } else {
-                    console.log("Role Successfully Added");
-                }
-            }
-            )
+        var query = "INSERT INTO role SET ?";
+        db.query(query, {
+            title: res.newRole,
+            salary: parseFloat(res.newSalary),
+            department_id: parseFloat(res.dept)
+        }, function (err, res) {
+            if (err) throw err;
+            viewRoles();
         })
-        mainMenu();
     })
 };
 
@@ -185,22 +176,30 @@ addEmployee = () => {
     inquirer.prompt([
         {
             type: 'input',
-            message: 'What Employee would you like to add',
-            name: 'newEmployee',
+            message: 'What is the first name of this employee?',
+            name: 'first_name',
+        },
+        {
+            type: 'input',
+            message: 'What is the last name of this employee?',
+            name: 'last_name',
+        },
+        {
+            type: 'input',
+            message: 'What is the roleID of this employee?',
+            name: 'role_id',
         },
     ])
     .then((res) => {
-        db.query("INSERT INTO Employee (Employee_name) VALUES (?)",
-        res.newEmployee,
-        (err, results => {
-            if (err) {
-                console.log(err);
-            } else {
-                console.log(`Employee ${res.newEmployee} has been successfully added!`);
-            }
-            mainMenu();
+        var query = "INSERT INTO employee SET ?"
+        db.query(query, {
+            first_name: res.first_name,
+            last_name: res.last_name,
+            role_id: parseInt(res.role_id),
+        }, function (err, res) {
+            if (err) throw err;
+            viewEmployees();
         })
-        )
     })
 };
 
