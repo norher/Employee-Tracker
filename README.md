@@ -6,7 +6,7 @@
 
 https://opensource.org/licenses/Apache-2.0
 
-[![Image]](/Employee-Tracker/assets/employeetrackerss.png)
+![Image](./assets/employeetrackerss.png)
 
 [Youtube Demo Video](https://youtu.be/Xv_5DlmD2fg)
 
