@@ -13,6 +13,11 @@ const db = mysql.createConnection({
     database: 'employee_db'
 }, console.log(`Connected to database.`));
 
+db.connect(function (err) {
+    if (err) throw err;
+    init();
+});
+
 const getDepartments = () => {
     db.query(`SELECT * FROM department`, (err, results) => {
         if (err) {
@@ -24,11 +29,28 @@ const getDepartments = () => {
     })
 };
 
-db.connect(function (err) {
-    if (err) throw err;
-    init();
-});
+const getRoles = () => {
+    db.query(`SELECT * FROM role`, (err, results) => {
+        if (err) {
+            console.log(err);
+        }
+        for (let role of results) {
+            allRoles.push(role.title)
+        }
+    })
+};
 
+const getEmployees = () => {
+    db.query(`SELECT * FROM employee`, (err, results) => {
+        if (err) {
+            console.log(err);
+        }
+        for (let employee of results) {
+            allEmployees.push(employee.first_name + employee.last_name)
+        }
+    })
+};
+  
 const mainMenu = () => {
     inquirer.prompt({
         type: 'list',
@@ -69,7 +91,8 @@ const mainMenu = () => {
                 updateEmployee();
                 break;
             case "Exit":
-                shutDown();
+                console.log("Thank you! Goodbye!");
+                db.end();
                 break;
         }
     });
@@ -203,7 +226,84 @@ addEmployee = () => {
     })
 };
 
+function updateEmployee() {
+    let queryEmployee = `SELECT employee.id, employee.first_name, employee.last_name, role.title, department.name AS department, role.salary, CONCAT(manager.first_name, ' ', manager.last_name) AS manager
+    FROM employee
+    LEFT JOIN employee manager on manager.id = employee.manager_id
+    INNER JOIN role ON (role.id = employee.role_id)
+    INNER JOIN department ON (department.id = role.department_id)
+    ORDER BY employee.id;`;
+
+    db.query(queryEmployee, function (err, res) {
+        if (err) throw err;
+        console.table("Enter the ID of the employee that you would like to update:", res);
+    });
+
+    inquirer
+        .prompt([{
+            name: "id",
+            type: "input",
+            message: "Enter the ID of the employee that you would like to update:",
+        }, {
+            name: "column",
+            type: "rawlist",
+            message: "What would you like to change about this employee?",
+            choices: [
+                "role",
+                "manager",
+            ]
+        }])
+        .then((answers) => {
+            const column = answers.column;
+            const employeeID = answers.id;
+
+            switch (column) {
+                case "role":
+                    db.query("SELECT * from role;", function (err, res) {
+                        if (err) throw err;
+                        console.table("Select the ID of the role that you would like to assign the employee to:", res);
+                    });
+                    break;
+                case "manager":
+                    db.query(queryEmployee, function (err, res) {
+                        if (err) throw err;
+                        console.table("Select the ID of the manager that you would like to assign the employee to:", res);
+                    });
+                    break;
+            }
+
+            inquirer
+                .prompt([{
+                    name: "id",
+                    type: "input",
+                    message: "Enter the ID of the " + column + " that you would like to assign the employee to:",
+                }]).then((answers) => {
+                    let Update;
+
+                    if (answers.id === "") {
+                        Update = "UPDATE employee SET " + column + "_id = null";
+                    } else {
+                        Update = "UPDATE employee SET " + column + "_id = " + parseInt(answers.id);
+                    }
+
+                    Update += " WHERE id = " + employeeID;
+
+                    db.query(Update, function (err, res) {
+                        if (err) throw err;
+                    });
+
+                    db.query(queryEmployee, function (err, res) {
+                        if (err) throw err;
+                        console.table("Employees", res);
+                        viewEmployees();
+                    });
+                });
+        });
+}
+
 function init() {
     getDepartments();
+    getEmployees();
+    getRoles();
     mainMenu();
 }
